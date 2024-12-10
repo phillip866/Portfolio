@@ -91,15 +91,77 @@
 </section>
 
 <section id="work-samples">
-    <h2>Programming & Project Work Samples</h2>
+    <h2>Programming Sample</h2>
     <div class="projects">
-        <div class="project-card">
-            <h3>Project 1: AI Booking Website</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.</p>
-        </div>
+     
         <div class="project-card">
             <h3>Project 2: Autotrading script for Forex</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet.</p>
+            <p>L// Retrieve indicator data and ensure successful data copy
+if(!CopyBuffer(handle_short_ma, 0, 0, 2, short_ma) ||
+   !CopyBuffer(handle_long_ma, 0, 0, 2, long_ma) ||
+   !CopyBuffer(handle_rsi, 0, 0, 1, rsi) ||
+   !CopyBuffer(handle_bbands, 1, 0, 1, bb_upper) ||
+   !CopyBuffer(handle_bbands, 2, 0, 1, bb_lower) ||
+   !CopyClose(_Symbol, PERIOD_CURRENT, 0, 1, close))
+{
+    Print("Error copying indicator data");
+    return;
+}
+
+// Calculate lot size if money management is enabled
+double trading_lots = UseMoneyManagement ? CalculateLotSize(RiskPercent) : Lots;
+
+// Only trade if no current position on this symbol
+if(!PositionSelect(_Symbol))
+{
+    // Buy Signal Conditions: Price below lower BB, RSI < 30, and a bullish MA crossover
+    if(close[0] < bb_lower[0] && rsi[0] < 30.0 && short_ma[1] <= long_ma[1] && short_ma[0] > long_ma[0])
+    {
+        Print("Buy signal detected");
+        ExecuteTrade(ORDER_TYPE_BUY, trading_lots);
+    }
+    // Sell Signal Conditions: Price above upper BB, RSI > 70, and a bearish MA crossover
+    else if(close[0] > bb_upper[0] && rsi[0] > 70.0 && short_ma[1] >= long_ma[1] && short_ma[0] < long_ma[0])
+    {
+        Print("Sell signal detected");
+        ExecuteTrade(ORDER_TYPE_SELL, trading_lots);
+    }
+}
+
+//------------------------------------
+// Trade Execution Function
+//------------------------------------
+void ExecuteTrade(ENUM_ORDER_TYPE order_type, double lot_size)
+{
+    MqlTradeRequest request = {};
+    MqlTradeResult  result  = {};
+
+    double price = (order_type == ORDER_TYPE_BUY) 
+                 ? SymbolInfoDouble(_Symbol, SYMBOL_ASK) 
+                 : SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+    request.action       = TRADE_ACTION_DEAL;
+    request.symbol       = _Symbol;
+    request.volume       = lot_size;
+    request.type         = order_type;
+    request.price        = price;
+    request.deviation    = 10;
+    request.magic        = 123456;
+    request.comment      = "Auto Trader v1.0";
+    request.type_filling = ORDER_FILLING_FOK;
+
+    if(!OrderSend(request, result))
+    {
+        Print("OrderSend failed: ", GetLastError());
+        return;
+    }
+
+    if(result.retcode == TRADE_RETCODE_DONE)
+        Print("Order executed: ", EnumToString(order_type), " ", lot_size, " lots at ", price);
+    else
+        Print("Order failed with retcode: ", result.retcode);
+}
+</p>
         </div>
     </div>
 </section>
