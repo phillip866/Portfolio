@@ -1,5 +1,5 @@
 html {
-	scroll-behaviour: smooth;
+    scroll-behaviour: smooth;
 }
 body {
     font-family: Arial, sans-serif;
@@ -81,18 +81,28 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+/* Adjusted styles for projects and project-cards */
 .projects {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    display: block;
 }
+
 .project-card {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: calc(33% - 20px);
+    width: 100%; /* Make the card full width */
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Add space between cards */
 }
-.project-card h3 {
-    margin-top: 0;
+
+/* Code blocks styling */
+.project-card pre code {
+    white-space: pre-wrap;  /* Wrap long lines */
+    display: block;
+    overflow: auto; /* Add scroll if needed */
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
 }
